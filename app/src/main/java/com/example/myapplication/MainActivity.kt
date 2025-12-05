@@ -214,7 +214,7 @@ class MainActivity : AppCompatActivity() {
             commands.append("${symbology}$SUFFIX_ENABLED=0;")
         }
 
-        // Enable check digit
+        // Enable check digit (that does not work)
         commands.append("scan0004002=1;")
         commands.append("scan0005002=1;")
         commands.append("scan0008002=1;")
