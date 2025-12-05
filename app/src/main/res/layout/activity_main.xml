@@ -26,5 +26,12 @@
             android:onClick="onStop"
             android:text="停止扫码" />
 
+        <Button
+            android:id="@+id/changeConfiguration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="changeConfiguration"
+            android:text="Change configuration" />
+
     </LinearLayout>
 </layout>

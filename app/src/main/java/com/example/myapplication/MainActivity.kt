@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -16,6 +15,7 @@ import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.example.myapplication.databinding.ActivityMainBinding
 import com.sunmi.scanner.IScanInterface
@@ -30,6 +30,43 @@ class MainActivity : AppCompatActivity() {
         const val DATA = "data"
         const val SOURCE = "source_byte"
         const val NONE = 100
+
+        // See documentation at
+        // https://github.com/kduma-autoid/capacitor-sunmi-scanhead/blob/main/android/src/main/java/com/sunmi/scanner/config/SunmiHelper.java
+        const val EAN8: String = "scan0002"
+        const val EAN13: String = "scan0003"
+        const val UPC_A: String = "scan0005"
+        const val UPC_E: String = "scan0004"
+        const val EAN128: String = "scan0011"
+        const val CODE39: String = "scan0008"
+        const val CODE128: String = "scan0001"
+        const val CODABAR: String = "scan0009"
+        const val DATABAR: String = "scan0012"
+        const val SUFFIX_ENABLED = "000"
+        const val SUFFIX_CHECK_CHAR_MODE: String = "009"
+        const val SUFFIX_CHECK_CHAR_TYPE: String = "002"
+
+        const val ENABLE_TRIGGER_CONTROL = "com.sunmi.scanner.ACTION_TRIGGER_CONTROL"
+        const val ENABLE_TRIGGER_CONTROL_ARG: String = "enable"
+
+        const val SET_ENABLED_BROADCAST: String = "sunmi003001"
+        const val SET_OUT_CODE_ACTION: String = "sunmi003006"
+        const val SET_OUT_CODE_ACTION_DATA_KEY: String = "sunmi003007"
+
+        const val C_1D_BARCODE: String = "scan9001"
+        const val ISBT128: String = "scan0021"
+        const val UPC_E1: String = "scan0028"
+        const val CODE93: String = "scan0010"
+        const val CODE11: String = "scan0015"
+        const val ISBN: String = "scan0016"
+        const val MSI_PLESSEY: String = "scan0020"
+        const val ISSN_EAN: String = "scan0027"
+        const val PDF417: String = "scan1001"
+        const val QR_CODE: String = "scan1002"
+        const val AZTEC: String = "scan1003"
+        const val DATA_MATRIX: String = "scan1004"
+        const val HANXIN_CODE: String = "scan1005"
+        const val INT25: String = "scan0006"
     }
 
     private lateinit var mBinding: ActivityMainBinding
@@ -149,6 +186,40 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })*/
+    }
+
+    private val symbologiesEnabled = listOf(
+        EAN8, EAN13, UPC_A, UPC_E, EAN128, CODE39, CODE128, CODABAR, DATABAR,
+    )
+
+    private val symbologiesDisabled = listOf(
+        C_1D_BARCODE, ISBT128, UPC_E1, CODE93, CODE11, ISBN, MSI_PLESSEY, ISSN_EAN, PDF417,
+        AZTEC, DATA_MATRIX, HANXIN_CODE, QR_CODE, INT25
+    )
+
+    fun changeConfiguration(view: View) {
+        // Enabled all needed symbologies supported by the app
+        val commands = StringBuffer()
+        for (symbology in symbologiesEnabled) {
+            commands.append("${symbology}$SUFFIX_ENABLED=1;")
+        }
+
+        // Enabled broadcast config
+        commands.append("$SET_ENABLED_BROADCAST=1;")
+        commands.append("$SET_OUT_CODE_ACTION=com.sunmi.scanner.ACTION_DATA_CODE_RECEIVED;")
+        commands.append("$SET_OUT_CODE_ACTION_DATA_KEY=data;")
+
+        // Disabled symbologies
+        for (symbology in symbologiesDisabled) {
+            commands.append("${symbology}$SUFFIX_ENABLED=0;")
+        }
+
+        // Enable check digit
+        commands.append("scan0004002=1;")
+        commands.append("scan0005002=1;")
+        commands.append("scan0008002=1;")
+
+        scanInterface?.sendCommand(commands.toString())
     }
 
     fun onStop(view: View) {
