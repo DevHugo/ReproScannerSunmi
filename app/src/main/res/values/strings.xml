@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="goto_test">Goto Test</string>
+    <string name="real_test">RealEpcAndTidTestClick</string>
+    <string name="real_inventory">RealTimeInventoryClick</string>
+    <string name="get_custom_sn">Get Custom SN</string>
+    <string name="get_scanModel">Get RFID Model</string>
+</resources>
